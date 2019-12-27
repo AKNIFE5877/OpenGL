@@ -1,2 +1,3 @@
 ﻿  main.cpp
-  FirstOpenGL.vcxproj -> D:\WorkSpace\OpenGL\FirstOpenGL\Debug\FirstOpenGL.exe
+d:\workspace\opengl\firstopengl\firstopengl\main.cpp(132): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+  FirstOpenGL.vcxproj -> D:\Workspace\OpenGL\FirstOpenGL\Debug\FirstOpenGL.exe
