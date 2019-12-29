@@ -1,5 +1,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <learnopengl/Shader.h>
+//#include <learnopengl/filesystem.h>
+#include <learnopengl/stb_image.h>
 
 #include <iostream>
 
@@ -10,37 +13,46 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 //顶点着色器代码
-const char* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"layout (location = 1) in vec3 aColor;\n"
-"out vec3 ourColor;\n"
-"void main()\n"
-"{\n"
-"	gl_Position = vec4(aPos, 1.0);\n"
-"   ourColor=aColor;\n"
-"}\0";	//千万别忘记这个\0
+//const char* vertexShaderSource = "#version 330 core\n"
+//"layout (location = 0) in vec3 aPos;\n"
+//"layout (location = 1) in vec3 aColor;\n"
+//"out vec3 ourColor;\n"
+//"void main()\n"
+//"{\n"
+//"	gl_Position = vec4(aPos, 1.0);\n"
+//"   ourColor=aColor;\n"
+//"}\0";	//千万别忘记这个\0
 
 //片元着色器代码
-const char* fragmentShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"in vec3 ourColor;\n"
-"void main()\n"
-"{\n"
-"	FragColor =vec4(ourColor,1.0);\n"
-"}\0";	//千万别忘记这个\0
+//const char* fragmentShaderSource = "#version 330 core\n"
+//"out vec4 FragColor;\n"
+//"in vec3 ourColor;\n"
+//"void main()\n"
+//"{\n"
+//"	FragColor =vec4(ourColor,1.0);\n"
+//"}\0";	//千万别忘记这个\0
 
 //顶点
 float vertices[] = {
-	0.5f, 0.5f, 0.0f,   1.0f,0.0f,0.0f,   // 右上角
-	0.5f, -0.5f, 0.0f,  0.0f,1.0f,0.0f,  // 右下角
-	-0.5f, -0.5f, 0.0f, 0.0f,0.0f,1.0f,// 左下角
-	-0.5f, 0.5f, 0.0f,  0.0f,0.0f,1.0f,// 左上角
+	//position          // color          //texture coords
+	0.5f, 0.5f, 0.0f,   1.0f,0.0f,0.0f,  2.0f,2.0f, // 右上角
+	0.5f, -0.5f, 0.0f,  0.0f,1.0f,0.0f,  2.0f,0.0f, // 右下角
+	-0.5f, -0.5f, 0.0f, 0.0f,0.0f,1.0f,  0.0f,0.0f,// 左下角
+	-0.5f, 0.5f, 0.0f,  0.0f,0.0f,1.0f,  0.0f,2.0f,// 左上角
+};
+//顶点数组
+unsigned int indices[]={
+	0,1,3,
+	1,2,3
 };
 
-unsigned int indices[]={
-	0,1,2,
-	
+//纹理坐标
+float texCoords[] = {
+	0.0f,0.0f,
+	1.0f,0.0f,
+	0.5f,1.0f,
 };
+
 int main()
 {
 	// 初始化glfw窗口
@@ -67,33 +79,35 @@ int main()
 		return -1;
 	}
 
-	//创建、编译着色器程序
-	//顶点着色器
-	int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);//编译着色器
+	Shader ourShader("shader.vs", "shader.fs");
 
-	//片元着色器
-	int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
+	////创建、编译着色器程序
+	////顶点着色器
+	//int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	//glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	//glCompileShader(vertexShader);//编译着色器
 
-	//链接着色器
-	int shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
+	////片元着色器
+	//int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	//glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	//glCompileShader(fragmentShader);
 
-	//释放着色器
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	////链接着色器
+	//int shaderProgram = glCreateProgram();
+	//glAttachShader(shaderProgram, vertexShader);
+	//glAttachShader(shaderProgram, fragmentShader);
+	//glLinkProgram(shaderProgram);
+
+	////释放着色器
+	//glDeleteShader(vertexShader);
+	//glDeleteShader(fragmentShader);
 
 	unsigned int VBO, VAO;
+	unsigned int EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-
-	unsigned int EBO;
 	glGenBuffers(1, &EBO);
+
 
 	//绑定顶点数组对象
 	glBindVertexArray(VAO);
@@ -103,16 +117,74 @@ int main()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	// 设置顶点属性指针
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	//颜色属性
-	glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(float),(void*)(3*sizeof(float)));
+	glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,8*sizeof(float),(void*)(3*sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	//纹理属性 
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),(void*)(6*sizeof(float)));
+	glEnableVertexAttribArray(2);
 
-	//线框渲染
+	//加载创建贴图
+	unsigned int texture1,texture2;
+	//texture1
+	glGenTextures(1, &texture1);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	stbi_set_flip_vertically_on_load(true);
+	int width, height, nrChannels;
+	unsigned char *data = stbi_load("container.jpg", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "failed to load texture" << std::endl;
+	}
+	stbi_image_free(data);
+
+	//texture2
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+
+	data = stbi_load("awesomeface.png", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "failed to load texture" << std::endl;
+	}
+	stbi_image_free(data);
+	ourShader.use();
+	glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0);
+	ourShader.setInt("texture2", 1);
+
+
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindVertexArray(0);
+
+	//渲染模式、线框
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);//GL_LINK
 
 	// render loop 循环渲染
@@ -126,13 +198,22 @@ int main()
 		glClearColor(1, 1, 0, 1.0f);//设置清屏颜色
 		glClear(GL_COLOR_BUFFER_BIT);//清屏
 
-	    // 当我们渲染一个物体时要使用着色器程序,激活着色器
-		glUseProgram(shaderProgram);
-		// 更新unifrom颜色
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
 		float timeValue = glfwGetTime();
-		float greenValue = sin(timeValue) / 2.0f + 0.5f;
-		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+		float aValue = sin(timeValue) / 2.0f + 0.5f;
+		ourShader.setFloat("num", aValue);
+	    // 当我们渲染一个物体时要使用着色器程序,激活着色器
+		//glUseProgram(shaderProgram);
+		ourShader.use();
+		//// 更新unifrom颜色
+		//float timeValue = glfwGetTime();
+		//float greenValue = sin(timeValue) / 2.0f + 0.5f;
+		//int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+		//glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 		// 绘制物体
 		glBindVertexArray(VAO);
 		//glDrawArrays(GL_TRIANGLES, 0, 3);

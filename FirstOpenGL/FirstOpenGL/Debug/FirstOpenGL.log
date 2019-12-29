@@ -1,3 +1,10 @@
 ﻿  main.cpp
-d:\workspace\opengl\firstopengl\firstopengl\main.cpp(132): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-  FirstOpenGL.vcxproj -> D:\Workspace\OpenGL\FirstOpenGL\Debug\FirstOpenGL.exe
+d:\workspace\opengl\include\learnopengl\shader.h(3): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
+d:\workspace\opengl\include\learnopengl\shader.h(4): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
+d:\workspace\opengl\include\learnopengl\shader.h(5): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
+d:\workspace\opengl\include\learnopengl\shader.h(6): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
+d:\workspace\opengl\include\learnopengl\shader.h(7): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
+d:\workspace\opengl\firstopengl\firstopengl\main.cpp(206): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+  stb_image.cpp
+  正在生成代码...
+  FirstOpenGL.vcxproj -> D:\WorkSpace\OpenGL\FirstOpenGL\Debug\FirstOpenGL.exe
