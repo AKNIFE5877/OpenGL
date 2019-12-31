@@ -33,15 +33,58 @@ const unsigned int SCR_HEIGHT = 600;
 //"}\0";	//千万别忘记这个\0
 
 //顶点
+//float vertices[] = {
+//	//position          // color          //texture coords
+//	0.5f, 0.5f, 0.0f,   1.0f,0.0f,0.0f,  2.0f,2.0f, // 右上角
+//	0.5f, -0.5f, 0.0f,  0.0f,1.0f,0.0f,  2.0f,0.0f, // 右下角
+//	-0.5f, -0.5f, 0.0f, 0.0f,0.0f,1.0f,  0.0f,0.0f,// 左下角
+//	-0.5f, 0.5f, 0.0f,  0.0f,0.0f,1.0f,  0.0f,2.0f,// 左上角
+//};
 float vertices[] = {
-	//position          // color          //texture coords
-	0.5f, 0.5f, 0.0f,   1.0f,0.0f,0.0f,  2.0f,2.0f, // 右上角
-	0.5f, -0.5f, 0.0f,  0.0f,1.0f,0.0f,  2.0f,0.0f, // 右下角
-	-0.5f, -0.5f, 0.0f, 0.0f,0.0f,1.0f,  0.0f,0.0f,// 左下角
-	-0.5f, 0.5f, 0.0f,  0.0f,0.0f,1.0f,  0.0f,2.0f,// 左上角
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
 //顶点数组
-unsigned int indices[]={
+unsigned int indices[] = {
 	0,1,3,
 	1,2,3
 };
@@ -117,18 +160,18 @@ int main()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	// 设置顶点属性指针
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	//颜色属性
-	glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,8*sizeof(float),(void*)(3*sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
 	//纹理属性 
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),(void*)(6*sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
 	//加载创建贴图
-	unsigned int texture1,texture2;
+	unsigned int texture1, texture2;
 	//texture1
 	glGenTextures(1, &texture1);
 	glBindTexture(GL_TEXTURE_2D, texture1);
@@ -206,9 +249,36 @@ int main()
 		float timeValue = glfwGetTime();
 		float aValue = sin(timeValue) / 2.0f + 0.5f;
 		ourShader.setFloat("num", aValue);
-	    // 当我们渲染一个物体时要使用着色器程序,激活着色器
+
+
+
+		// 当我们渲染一个物体时要使用着色器程序,激活着色器
 		//glUseProgram(shaderProgram);
 		ourShader.use();
+
+		//3D透视
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 view = glm::mat4(1.0f);
+		glm::mat4 projection = glm::mat4(1.0f);
+		model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+		projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		unsigned int modelLoc = glGetUniformLocation(ourShader.ID, "model");
+		unsigned int viewLoc = glGetUniformLocation(ourShader.ID, "view");
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE,glm::value_ptr(model));
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+		ourShader.setMat4("projection", projection);
+
+
+		//变换矩阵
+		//glm::mat4 transform = glm::mat4(1.0f);
+		//transform = glm::translate(transform, glm::vec3(0.5f, 0.5f, 0.0f));
+		//transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+		//unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+		//glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
+		//3D透视
+
 		//// 更新unifrom颜色
 		//float timeValue = glfwGetTime();
 		//float greenValue = sin(timeValue) / 2.0f + 0.5f;
@@ -227,7 +297,7 @@ int main()
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 
-	
+
 	glfwTerminate();//终止进程
 	return 0;
 }
