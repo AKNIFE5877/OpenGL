@@ -5,16 +5,28 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
 #include <learnopengl/stb_image.h>
+#include <learnopengl/camera.h>
 
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+float lastX = SCR_WIDTH / 2.0f;
+float lastY = SCR_HEIGHT / 2.0f;
+bool firstMouse = true;
+
+float deltaTime = 0.0f;
+float lastTime = 0.0f;
 //顶点着色器代码
 //const char* vertexShaderSource = "#version 330 core\n"
 //"layout (location = 0) in vec3 aPos;\n"
@@ -131,6 +143,10 @@ int main()
 	}
 	glfwMakeContextCurrent(window);//将窗口的上下文环境设置为当前主线程的上下文环境
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);//注册窗口回调函数
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
+	//告诉glf捕获鼠标输入
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//  初始化glad
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -253,6 +269,11 @@ int main()
 	// -----------
 	while (!glfwWindowShouldClose(window))//检测是否关闭窗口
 	{
+		//time
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastTime;
+		lastTime = currentFrame;
+
 		// input
 		processInput(window);
 
@@ -275,19 +296,26 @@ int main()
 		//glUseProgram(shaderProgram);
 		ourShader.use();
 
+		glm::mat4 view = glm::mat4(1.0f);
+		//float radius = 10.0f;
+		//float camX = sin(glfwGetTime())*radius;
+		//float camZ = cos(glfwGetTime())*radius;
+		view = camera.GetViewMatrix();
+		ourShader.setMat4("view", view);
+
 		//3D透视
 		//glm::mat4 model = glm::mat4(1.0f);
-		glm::mat4 view = glm::mat4(1.0f);
+		//glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
 		//model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+		//view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 		projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		//unsigned int modelLoc = glGetUniformLocation(ourShader.ID, "model");
 		//unsigned int viewLoc = glGetUniformLocation(ourShader.ID, "view");
 		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE,glm::value_ptr(model));
 		//glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
 		ourShader.setMat4("projection", projection);
-		ourShader.setMat4("view", view);
+		//ourShader.setMat4("view", view);
 
 		//变换矩阵
 		//glm::mat4 transform = glm::mat4(1.0f);
@@ -309,7 +337,7 @@ int main()
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, cubePositions[i]);
-			float angle = 20.0f*i;
+			float angle = 20.0f*i+glfwGetTime();
 			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			ourShader.setMat4("model", model);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -335,6 +363,20 @@ void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)//检查Esc键有没有按下
 		glfwSetWindowShouldClose(window, true);//设置窗口关闭
+
+	float cameraSpeed = 2.5f * deltaTime;
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		camera.ProcessKeyboard(FORWARD, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		camera.ProcessKeyboard(BACKWARD, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		camera.ProcessKeyboard(LEFT, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		camera.ProcessKeyboard(RIGHT, deltaTime);
+	}
 }
 
 
@@ -343,4 +385,21 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	// make sure the viewport matches the new window dimensions; note that width and 
 	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);//调整OpenGL视口大小
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+	if (firstMouse) {
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos;
+	lastX = xpos;
+	lastY = ypos;
+	camera.ProcessMouseMovement(xoffset, yoffset);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+	camera.ProcessMouseScroll(yoffset);
 }
